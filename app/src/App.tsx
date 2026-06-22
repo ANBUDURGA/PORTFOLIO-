@@ -37,22 +37,29 @@ function App() {
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
+  const [adminPassword, setAdminPassword] = useState<string>('');
   const {
     data,
     isLoaded,
+    isSaving,
+    saveError,
+    saveSuccess,
     updateProfile,
     updateStats,
     updateContact,
     addProject,
     deleteProject,
+    updateProject,
     addSkill,
     deleteSkill,
+    updateSkill,
     addCertification,
     deleteCertification,
+    updateCertification,
     resetData,
     exportData,
     importData,
-  } = usePortfolioData();
+  } = usePortfolioData(adminPassword);
 
   if (!isLoaded) {
     return (
@@ -76,6 +83,7 @@ function App() {
         onAdminClick={() => setIsAdminOpen(true)} 
         theme={theme}
         toggleTheme={toggleTheme}
+        userName={data.profile.name}
       />
 
       {/* Main Content */}
@@ -84,8 +92,10 @@ function App() {
           name={data.profile.name}
           tagline={data.profile.tagline}
           available={data.profile.available}
-          photo={data.profile.photo}
           resumeUrl={data.profile.resumeUrl}
+          github={data.contact.github}
+          linkedin={data.contact.linkedin}
+          email={data.contact.email}
         />
         <About 
           about={data.profile.about}
@@ -98,20 +108,26 @@ function App() {
         <Footer />
       </main>
 
-      {/* Admin Panel */}
       <AdminPanel
         isOpen={isAdminOpen}
         onClose={() => setIsAdminOpen(false)}
         data={data}
+        setAdminPassword={setAdminPassword}
+        isSaving={isSaving}
+        saveSuccess={saveSuccess}
+        saveError={saveError}
         updateProfile={updateProfile}
         updateStats={updateStats}
         updateContact={updateContact}
         addProject={addProject}
         deleteProject={deleteProject}
+        updateProject={updateProject}
         addSkill={addSkill}
         deleteSkill={deleteSkill}
+        updateSkill={updateSkill}
         addCertification={addCertification}
         deleteCertification={deleteCertification}
+        updateCertification={updateCertification}
         resetData={resetData}
         exportData={exportData}
         importData={importData}

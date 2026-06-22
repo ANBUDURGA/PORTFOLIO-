@@ -1,24 +1,30 @@
-import { useState, useRef } from 'react';
-import { X, User, Briefcase, Award, Mail, Settings, Plus, Trash2, Save, Download, Upload, RotateCcw } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { X, User, Briefcase, Award, Mail, Settings, Plus, Trash2, Save, Download, Upload, RotateCcw, Edit2 } from 'lucide-react';
 import type { PortfolioData, Project, Skill, Certification } from '@/types';
-import { supabase } from '@/lib/supabase';
 
 interface AdminPanelProps {
   isOpen: boolean;
   onClose: () => void;
   data: PortfolioData;
+  setAdminPassword: (password: string) => void;
+  isSaving: boolean;
+  saveSuccess: boolean;
+  saveError: string | null;
   updateProfile: (profile: Partial<PortfolioData['profile']>) => void;
   updateStats: (stats: Partial<PortfolioData['stats']>) => void;
   updateContact: (contact: Partial<PortfolioData['contact']>) => void;
   addProject: (project: Omit<Project, 'id'>) => void;
   deleteProject: (id: string) => void;
+  updateProject: (id: string, updatedFields: Partial<Project>) => void;
   addSkill: (categoryId: string, skill: Omit<Skill, 'id'>) => void;
   deleteSkill: (categoryId: string, skillId: string) => void;
+  updateSkill: (categoryId: string, skillId: string, updatedName: string) => void;
   addCertification: (cert: Omit<Certification, 'id'>) => void;
   deleteCertification: (id: string) => void;
+  updateCertification: (id: string, updatedFields: Partial<Certification>) => void;
   resetData: () => void;
   exportData: () => void;
-  importData: (json: string) => boolean;
+  importData: (jsonString: string) => boolean;
 }
 
 type Tab = 'profile' | 'projects' | 'skills' | 'certifications' | 'contact' | 'settings';
@@ -27,15 +33,22 @@ export function AdminPanel({
   isOpen, 
   onClose, 
   data,
+  setAdminPassword,
+  isSaving,
+  saveSuccess,
+  saveError,
   updateProfile,
   updateStats,
   updateContact,
   addProject,
   deleteProject,
+  updateProject,
   addSkill,
   deleteSkill,
+  updateSkill,
   addCertification,
   deleteCertification,
+  updateCertification,
   resetData,
   exportData,
   importData,
@@ -57,6 +70,43 @@ export function AdminPanel({
   const [newProject, setNewProject] = useState<Partial<Project>>({ type: 'Data Engineering', tools: [], featured: false, link: '' });
   const [newCert, setNewCert] = useState<Partial<Certification>>({});
   const [newSkillName, setNewSkillName] = useState('');
+
+  // Sync form states with database changes or panel toggles
+  useEffect(() => {
+    if (isOpen) {
+      setProfileForm(data.profile);
+      setStatsForm(data.stats);
+      setContactForm(data.contact);
+    }
+  }, [isOpen, data]);
+
+  // Editing State
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [editingProjectForm, setEditingProjectForm] = useState<Partial<Project>>({});
+  const [editingCertId, setEditingCertId] = useState<string | null>(null);
+  const [editingCertForm, setEditingCertForm] = useState<Partial<Certification>>({});
+  const [editingSkillId, setEditingSkillId] = useState<string | null>(null);
+  const [editingSkillName, setEditingSkillName] = useState('');
+
+  const handleSaveProjectEdit = (id: string) => {
+    updateProject(id, editingProjectForm);
+    setEditingProjectId(null);
+    setEditingProjectForm({});
+  };
+
+  const handleSaveCertEdit = (id: string) => {
+    updateCertification(id, editingCertForm);
+    setEditingCertId(null);
+    setEditingCertForm({});
+  };
+
+  const handleSaveSkillEdit = (categoryId: string, skillId: string) => {
+    if (editingSkillName.trim()) {
+      updateSkill(categoryId, skillId, editingSkillName.trim());
+      setEditingSkillId(null);
+      setEditingSkillName('');
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -83,32 +133,17 @@ export function AdminPanel({
             <p className="text-gold-muted mt-2">Please log in to manage your portfolio</p>
           </div>
 
-          <form onSubmit={async (e) => {
+          <form onSubmit={(e) => {
             e.preventDefault();
             setLoginError('');
             
-            try {
-              if (loginId === 'anbu' && password === '10') {
-                setIsAuthenticated(true);
-                setLoginId('');
-                setPassword('');
-                return;
-              }
-
-              const { data, error } = await supabase.auth.signInWithPassword({
-                email: loginId,
-                password: password,
-              });
-
-              if (error) {
-                setLoginError(error.message);
-              } else if (data?.session) {
-                setIsAuthenticated(true);
-                setLoginId('');
-                setPassword('');
-              }
-            } catch (err: any) {
-              setLoginError(err.message || 'An unexpected error occurred');
+            if (loginId === 'anbu' && password === '10') {
+              setIsAuthenticated(true);
+              setAdminPassword(password);
+              setLoginId('');
+              setPassword('');
+            } else {
+              setLoginError('Invalid admin credentials.');
             }
           }} className="space-y-4">
             <div>
@@ -144,9 +179,9 @@ export function AdminPanel({
     { id: 'settings' as Tab, label: 'Settings', icon: Settings },
   ];
 
-  const handleSaveProfile = () => { updateProfile(profileForm); alert('Profile saved!'); };
-  const handleSaveStats = () => { updateStats(statsForm); alert('Stats saved!'); };
-  const handleSaveContact = () => { updateContact(contactForm); alert('Contact info saved!'); };
+  const handleSaveProfile = () => { updateProfile(profileForm); };
+  const handleSaveStats = () => { updateStats(statsForm); };
+  const handleSaveContact = () => { updateContact(contactForm); };
 
   const handleAddProject = () => {
     if (newProject.title && newProject.description) {
@@ -157,7 +192,6 @@ export function AdminPanel({
         link: newProject.link || ''
       } as Omit<Project, 'id'>);
       setNewProject({ type: 'Data Engineering', tools: [], featured: false, link: '' });
-      alert('Project added!');
     }
   };
 
@@ -165,7 +199,6 @@ export function AdminPanel({
     if (newCert.name && newCert.issuer) {
       addCertification(newCert as Omit<Certification, 'id'>);
       setNewCert({});
-      alert('Certification added!');
     }
   };
 
@@ -196,9 +229,28 @@ export function AdminPanel({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="relative ml-auto w-full max-w-2xl h-full bg-forest border-l border-gold/20 shadow-2xl flex flex-col">
         <div className="flex items-center justify-between p-6 border-b border-gold/10">
-          <div>
+          <div className="text-left">
             <h2 className="text-xl font-serif font-semibold text-gold">Admin Panel</h2>
             <p className="text-sm text-gold-muted">Manage your portfolio content</p>
+            {isSaving && (
+              <p className="text-xs text-gold animate-pulse mt-1.5 flex items-center gap-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-gold" />
+                </span>
+                Saving to GitHub... (may take 10-60s)
+              </p>
+            )}
+            {saveSuccess && (
+              <p className="text-xs text-green-400 mt-1.5">
+                ✓ Saved — site will update in ~30-60s
+              </p>
+            )}
+            {saveError && (
+              <p className="text-xs text-red-400 mt-1.5">
+                ✗ Error: {saveError}
+              </p>
+            )}
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gold/10 rounded-lg transition-colors">
             <X className="w-5 h-5 text-gold" />
@@ -224,48 +276,81 @@ export function AdminPanel({
           {activeTab === 'profile' && (
             <div className="space-y-6">
               <div>
-                <label className="block text-sm text-gold-muted mb-2">Profile Photo (URL or Upload)</label>
-                <div className="flex gap-2 mb-3">
-                  <input type="text" value={profileForm.photo || ''} onChange={(e) => setProfileForm({ ...profileForm, photo: e.target.value })} className="flex-1 px-4 py-2.5 bg-gold/5 border border-gold/20 rounded-lg text-gold placeholder-gold-muted/50 focus:outline-none focus:border-gold/50" placeholder="Enter image URL..." />
-                  <label className="flex items-center justify-center gap-2 px-4 bg-gold/10 border border-gold/20 rounded-lg text-gold hover:bg-gold/20 cursor-pointer transition-colors whitespace-nowrap">
-                    <Upload className="w-4 h-4" />
-                    <span>Upload</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => setProfileForm({ ...profileForm, photo: event.target?.result as string });
-                        reader.readAsDataURL(file);
-                      }
-                    }} />
-                  </label>
-                </div>
-                {profileForm.photo && (
-                  <div className="relative w-20 h-20 rounded-full border-2 border-gold/30 overflow-hidden flex-shrink-0">
-                    <img src={profileForm.photo} alt="Profile preview" className="w-full h-full object-cover" />
+                <label className="block text-sm text-gold-muted mb-2">Resume Configuration</label>
+                
+                <div className="space-y-4 p-4 bg-gold/5 border border-gold/15 rounded-xl">
+                  {/* Option 1: URL */}
+                  <div>
+                    <label className="block text-xs text-gold-muted mb-1.5 uppercase tracking-wider text-left">Option A: Link to External Resume (Google Drive, Dropbox, etc.)</label>
+                    <input 
+                      type="text" 
+                      value={profileForm.resumeUrl && !profileForm.resumeUrl.startsWith('data:') ? profileForm.resumeUrl : ''} 
+                      onChange={(e) => setProfileForm({ ...profileForm, resumeUrl: e.target.value })} 
+                      className="w-full px-4 py-2.5 bg-forest-dark border border-gold/20 rounded-lg text-gold placeholder-gold-muted/30 focus:outline-none focus:border-gold/50" 
+                      placeholder="https://drive.google.com/file/d/..." 
+                      disabled={!!(profileForm.resumeUrl && profileForm.resumeUrl.startsWith('data:'))}
+                    />
                   </div>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm text-gold-muted mb-2">Resume (URL or Upload PDF/DOCX)</label>
-                <div className="flex gap-2 mb-1">
-                  <input type="text" value={profileForm.resumeUrl || ''} onChange={(e) => setProfileForm({ ...profileForm, resumeUrl: e.target.value })} className="flex-1 px-4 py-2.5 bg-gold/5 border border-gold/20 rounded-lg text-gold placeholder-gold-muted/50 focus:outline-none focus:border-gold/50" placeholder="Enter resume URL..." />
-                  <label className="flex items-center justify-center gap-2 px-4 bg-gold/10 border border-gold/20 rounded-lg text-gold hover:bg-gold/20 cursor-pointer transition-colors whitespace-nowrap">
-                    <Upload className="w-4 h-4" />
-                    <span>Upload Docs</span>
-                    <input type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" className="hidden" onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => setProfileForm({ ...profileForm, resumeUrl: event.target?.result as string });
-                        reader.readAsDataURL(file);
-                      }
-                    }} />
-                  </label>
+
+                  <div className="flex items-center justify-between py-1">
+                    <div className="h-px bg-gold/10 flex-1" />
+                    <span className="text-xs text-gold-muted/50 px-3 uppercase">OR</span>
+                    <div className="h-px bg-gold/10 flex-1" />
+                  </div>
+
+                  {/* Option 2: Upload File */}
+                  <div>
+                    <label className="block text-xs text-gold-muted mb-1.5 uppercase tracking-wider text-left">Option B: Upload PDF or DOCX File directly</label>
+                    
+                    {profileForm.resumeUrl && profileForm.resumeUrl.startsWith('data:') ? (
+                      <div className="flex items-center justify-between p-3.5 bg-gold/10 border border-gold/30 rounded-lg">
+                        <div className="flex items-center gap-3 text-left">
+                          <div className="p-2 bg-gold/10 rounded-lg text-gold flex-shrink-0">
+                            <Upload className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gold truncate max-w-[200px] sm:max-w-xs">
+                              {profileForm.resumeUrl.startsWith('data:application/pdf') ? 'Resume_Document.pdf' : 'Resume_Document.docx'}
+                            </p>
+                            <p className="text-xs text-green-400 font-medium">✓ Uploaded & embedded</p>
+                          </div>
+                        </div>
+                        <button 
+                          type="button"
+                          onClick={() => setProfileForm({ ...profileForm, resumeUrl: '' })}
+                          className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-lg text-xs font-semibold transition-colors flex-shrink-0"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="flex flex-col items-center justify-center gap-2 p-6 border border-dashed border-gold/30 hover:border-gold/50 rounded-lg bg-gold/5 hover:bg-gold/10 cursor-pointer transition-all text-center">
+                        <Upload className="w-8 h-8 text-gold-muted mb-1" />
+                        <span className="text-sm font-medium text-gold">Click to upload your resume</span>
+                        <span className="text-xs text-gold-muted/60">Supports PDF, DOCX, or DOC (Max 2.5MB)</span>
+                        <input 
+                          type="file" 
+                          accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
+                          className="hidden" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              if (file.size > 2.5 * 1024 * 1024) {
+                                alert("File size is too large (max 2.5MB recommended for database embedding). Please link to an external URL instead.");
+                                return;
+                              }
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                setProfileForm({ ...profileForm, resumeUrl: event.target?.result as string });
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }} 
+                        />
+                      </label>
+                    )}
+                  </div>
                 </div>
-                {profileForm.resumeUrl && (
-                  <span className="text-xs text-green-400">✓ Resume linked</span>
-                )}
               </div>
               <div>
                 <label className="block text-sm text-gold-muted mb-2">Name</label>
@@ -343,17 +428,54 @@ export function AdminPanel({
               <div className="space-y-3">
                 <h3 className="font-semibold text-gold">Existing Projects</h3>
                 {data.projects.map((project) => (
-                  <div key={project.id} className="glass-card p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{project.icon}</span>
-                      <div>
-                        <p className="text-gold font-medium">{project.title}</p>
-                        <p className="text-sm text-gold-muted">{project.type}</p>
+                  <div key={project.id} className="glass-card p-4">
+                    {editingProjectId === project.id ? (
+                      <div className="space-y-3">
+                        <input type="text" value={editingProjectForm.title || ''} onChange={(e) => setEditingProjectForm({ ...editingProjectForm, title: e.target.value })} className="w-full px-4 py-2 bg-gold/5 border border-gold/20 rounded-lg text-gold focus:outline-none focus:border-gold/50" placeholder="Project Title" />
+                        <textarea value={editingProjectForm.description || ''} onChange={(e) => setEditingProjectForm({ ...editingProjectForm, description: e.target.value })} rows={2} className="w-full px-4 py-2 bg-gold/5 border border-gold/20 rounded-lg text-gold focus:outline-none focus:border-gold/50 resize-none" placeholder="Description" />
+                        <div className="grid grid-cols-2 gap-4">
+                          <select value={editingProjectForm.type || ''} onChange={(e) => setEditingProjectForm({ ...editingProjectForm, type: e.target.value })} className="px-4 py-2 bg-forest border border-gold/20 rounded-lg text-gold focus:outline-none">
+                            {projectTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                          </select>
+                          <select value={editingProjectForm.icon || ''} onChange={(e) => setEditingProjectForm({ ...editingProjectForm, icon: e.target.value })} className="px-4 py-2 bg-forest border border-gold/20 rounded-lg text-gold focus:outline-none">
+                            {projectIcons.map(i => <option key={i} value={i}>{i}</option>)}
+                          </select>
+                        </div>
+                        <input type="text" value={editingProjectForm.tools?.join(', ') || ''} onChange={(e) => setEditingProjectForm({ ...editingProjectForm, tools: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })} className="w-full px-4 py-2 bg-gold/5 border border-gold/20 rounded-lg text-gold focus:outline-none focus:border-gold/50" placeholder="Tools (comma separated)" />
+                        <input type="text" value={editingProjectForm.outcome || ''} onChange={(e) => setEditingProjectForm({ ...editingProjectForm, outcome: e.target.value })} className="w-full px-4 py-2 bg-gold/5 border border-gold/20 rounded-lg text-gold focus:outline-none focus:border-gold/50" placeholder="Outcome" />
+                        <input type="text" value={editingProjectForm.link || ''} onChange={(e) => setEditingProjectForm({ ...editingProjectForm, link: e.target.value })} className="w-full px-4 py-2 bg-gold/5 border border-gold/20 rounded-lg text-gold focus:outline-none focus:border-gold/50" placeholder="Project Link" />
+                        <div className="flex items-center gap-3">
+                          <input type="checkbox" id={`edit-feat-${project.id}`} checked={editingProjectForm.featured || false} onChange={(e) => setEditingProjectForm({ ...editingProjectForm, featured: e.target.checked })} />
+                          <label htmlFor={`edit-feat-${project.id}`} className="text-gold text-sm">Featured Project</label>
+                        </div>
+                        <div className="flex gap-2 pt-1">
+                          <button onClick={() => handleSaveProjectEdit(project.id)} className="px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-500/30 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors">
+                            <Save className="w-3.5 h-3.5" /> Save
+                          </button>
+                          <button onClick={() => { setEditingProjectId(null); setEditingProjectForm({}); }} className="px-3 py-1.5 bg-gold/10 hover:bg-gold/20 text-gold border border-gold/20 rounded-lg text-xs font-semibold transition-colors">
+                            Cancel
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <button onClick={() => deleteProject(project.id)} className="p-2 hover:bg-red-500/20 rounded-lg transition-colors">
-                      <Trash2 className="w-4 h-4 text-red-400" />
-                    </button>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{project.icon}</span>
+                          <div>
+                            <p className="text-gold font-medium">{project.title}</p>
+                            <p className="text-sm text-gold-muted">{project.type}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-1">
+                          <button onClick={() => { setEditingProjectId(project.id); setEditingProjectForm(project); }} className="p-2 hover:bg-gold/10 rounded-lg transition-colors" title="Edit project">
+                            <Edit2 className="w-4 h-4 text-gold-muted hover:text-gold" />
+                          </button>
+                          <button onClick={() => deleteProject(project.id)} className="p-2 hover:bg-red-500/20 rounded-lg transition-colors">
+                            <Trash2 className="w-4 h-4 text-red-400" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -383,10 +505,35 @@ export function AdminPanel({
                   <div className="flex flex-wrap gap-2">
                     {category.skills.map((skill) => (
                       <span key={skill.id} className="inline-flex items-center gap-2 px-3 py-1.5 bg-gold/10 border border-gold/20 rounded-full text-sm text-gold">
-                        {skill.name}
-                        <button onClick={() => deleteSkill(category.id, skill.id)} className="hover:text-red-400 transition-colors">
-                          <X className="w-3 h-3" />
-                        </button>
+                        {editingSkillId === skill.id ? (
+                          <div className="flex items-center gap-1.5">
+                            <input
+                              type="text"
+                              value={editingSkillName}
+                              onChange={(e) => setEditingSkillName(e.target.value)}
+                              className="w-20 px-1 py-0.5 bg-forest border border-gold/30 rounded text-xs text-gold focus:outline-none"
+                              autoFocus
+                            />
+                            <button onClick={() => handleSaveSkillEdit(category.id, skill.id)} className="text-green-400 hover:text-green-300 font-semibold text-xs" title="Save">✓</button>
+                            <button onClick={() => { setEditingSkillId(null); setEditingSkillName(''); }} className="text-red-400 hover:text-red-300 font-semibold text-xs" title="Cancel">✗</button>
+                          </div>
+                        ) : (
+                          <>
+                            <span 
+                              className="cursor-pointer hover:text-gold-muted transition-colors"
+                              onClick={() => {
+                                setEditingSkillId(skill.id);
+                                setEditingSkillName(skill.name);
+                              }}
+                              title="Click to edit skill"
+                            >
+                              {skill.name}
+                            </span>
+                            <button onClick={() => deleteSkill(category.id, skill.id)} className="hover:text-red-400 transition-colors">
+                              <X className="w-3 h-3" />
+                            </button>
+                          </>
+                        )}
                       </span>
                     ))}
                   </div>
@@ -413,14 +560,40 @@ export function AdminPanel({
               <div className="space-y-3">
                 <h3 className="font-semibold text-gold">Existing Certifications</h3>
                 {data.certifications.map((cert) => (
-                  <div key={cert.id} className="glass-card p-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-gold font-medium">{cert.name}</p>
-                      <p className="text-sm text-gold-muted">{cert.issuer} • {cert.date}</p>
-                    </div>
-                    <button onClick={() => deleteCertification(cert.id)} className="p-2 hover:bg-red-500/20 rounded-lg transition-colors">
-                      <Trash2 className="w-4 h-4 text-red-400" />
-                    </button>
+                  <div key={cert.id} className="glass-card p-4">
+                    {editingCertId === cert.id ? (
+                      <div className="space-y-3">
+                        <input type="text" value={editingCertForm.name || ''} onChange={(e) => setEditingCertForm({ ...editingCertForm, name: e.target.value })} className="w-full px-4 py-2 bg-gold/5 border border-gold/20 rounded-lg text-gold focus:outline-none" placeholder="Cert Name" />
+                        <input type="text" value={editingCertForm.issuer || ''} onChange={(e) => setEditingCertForm({ ...editingCertForm, issuer: e.target.value })} className="w-full px-4 py-2 bg-gold/5 border border-gold/20 rounded-lg text-gold focus:outline-none" placeholder="Issuer" />
+                        <div className="grid grid-cols-2 gap-4">
+                          <input type="text" value={editingCertForm.date || ''} onChange={(e) => setEditingCertForm({ ...editingCertForm, date: e.target.value })} className="px-4 py-2 bg-gold/5 border border-gold/20 rounded-lg text-gold focus:outline-none" placeholder="Date" />
+                          <input type="text" value={editingCertForm.endDate || ''} onChange={(e) => setEditingCertForm({ ...editingCertForm, endDate: e.target.value })} className="px-4 py-2 bg-gold/5 border border-gold/20 rounded-lg text-gold focus:outline-none" placeholder="End Date (optional)" />
+                        </div>
+                        <div className="flex gap-2 pt-1">
+                          <button onClick={() => handleSaveCertEdit(cert.id)} className="px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-500/30 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors">
+                            <Save className="w-3.5 h-3.5" /> Save
+                          </button>
+                          <button onClick={() => { setEditingCertId(null); setEditingCertForm({}); }} className="px-3 py-1.5 bg-gold/10 hover:bg-gold/20 text-gold border border-gold/20 rounded-lg text-xs font-semibold transition-colors">
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-gold font-medium">{cert.name}</p>
+                          <p className="text-sm text-gold-muted">{cert.issuer} • {cert.date}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <button onClick={() => { setEditingCertId(cert.id); setEditingCertForm(cert); }} className="p-2 hover:bg-gold/10 rounded-lg transition-colors" title="Edit certification">
+                            <Edit2 className="w-4 h-4 text-gold-muted hover:text-gold" />
+                          </button>
+                          <button onClick={() => deleteCertification(cert.id)} className="p-2 hover:bg-red-500/20 rounded-lg transition-colors">
+                            <Trash2 className="w-4 h-4 text-red-400" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -472,7 +645,7 @@ export function AdminPanel({
                   <div className="space-y-3">
                     <p className="text-gold-muted text-sm">Are you sure? This will delete all your custom data.</p>
                     <div className="flex gap-3">
-                      <button onClick={() => { resetData(); setShowResetConfirm(false); alert('Data reset to defaults!'); }} className="flex-1 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 hover:bg-red-500/30 transition-colors">
+                      <button onClick={() => { resetData(); setShowResetConfirm(false); }} className="flex-1 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 hover:bg-red-500/30 transition-colors">
                         Yes, Reset
                       </button>
                       <button onClick={() => setShowResetConfirm(false)} className="flex-1 p-3 bg-gold/5 border border-gold/20 rounded-lg text-gold hover:bg-gold/10 transition-colors">

@@ -18,21 +18,42 @@ export function Contact({ contact }: ContactProps) {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setFormData({ name: '', email: '', message: '' });
-    
-    // Reset success message after 5 seconds
-    setTimeout(() => setIsSubmitted(false), 5000);
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${contact.email}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          _subject: `New Message from Portfolio: ${formData.name}`,
+        })
+      });
+      
+      if (response.ok) {
+        setIsSubmitted(true);
+        setFormData({ name: '', email: '', message: '' });
+        // Reset success message after 5 seconds
+        setTimeout(() => setIsSubmitted(false), 5000);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Something went wrong');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      alert('Failed to send message. Please try again or contact directly via email.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactItems = [
     { icon: Mail, label: 'Email', value: contact.email, href: `mailto:${contact.email}` },
     { icon: Linkedin, label: 'LinkedIn', value: 'Connect on LinkedIn', href: contact.linkedin },
-    { icon: Github, label: 'GitHub', value: 'github.com/akishwar', href: contact.github },
+    { icon: Github, label: 'GitHub', value: contact.github.replace('https://', '').replace('www.', ''), href: contact.github },
   ];
 
   return (

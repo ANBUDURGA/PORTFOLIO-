@@ -42,7 +42,6 @@ export interface Profile {
   title: string;
   tagline: string;
   about: string;
-  photo: string;
   resumeUrl: string;
   available: boolean;
 }
@@ -62,11 +61,10 @@ export interface PortfolioData {
 
 export const defaultPortfolioData: PortfolioData = {
   profile: {
-    name: "Akishwar",
+    name: "ANBU DURGA R",
     title: "Data Engineer",
     tagline: "Building scalable data pipelines & real-time systems that turn raw data into business intelligence.",
     about: "I'm a final-year B.Tech student in Artificial Intelligence & Data Science, transitioning into Data Engineering — a field I chose for its long-term career stability, depth, and the critical role it plays in every data-driven organization.\n\nI'm deeply passionate about building scalable ETL pipelines, real-time data systems, and cloud data infrastructure that transforms raw, chaotic data into reliable business intelligence.\n\nMy approach is engineering-first: I think about fault tolerance, schema evolution, data quality, and pipeline observability — not just making data 'work', but making it production-ready.\n\nI thrive on continuous learning and am actively pursuing MAANG-level Data Engineer roles where I can build systems that scale to millions of records in real time.",
-    photo: "",
     resumeUrl: "",
     available: true,
   },
@@ -131,7 +129,7 @@ export const defaultPortfolioData: PortfolioData = {
       outcome: "Sub-second data latency for 1M+ ride events",
       featured: true,
       icon: "🚗",
-      link: "https://github.com/akishwar",
+      link: "https://github.com/ANBUDURGA",
     },
     {
       id: "p2",
@@ -142,7 +140,7 @@ export const defaultPortfolioData: PortfolioData = {
       outcome: "Surfaced hidden sales patterns → improved decisions",
       featured: false,
       icon: "🛒",
-      link: "https://github.com/akishwar",
+      link: "https://github.com/ANBUDURGA",
     },
     {
       id: "p3",
@@ -153,7 +151,7 @@ export const defaultPortfolioData: PortfolioData = {
       outcome: "Real-time browser-based data storytelling",
       featured: false,
       icon: "📊",
-      link: "https://github.com/akishwar",
+      link: "https://github.com/ANBUDURGA",
     },
     {
       id: "p4",
@@ -164,7 +162,7 @@ export const defaultPortfolioData: PortfolioData = {
       outcome: "Reduced stockouts by predicting demand curves",
       featured: false,
       icon: "📦",
-      link: "https://github.com/akishwar",
+      link: "https://github.com/ANBUDURGA",
     },
     {
       id: "p5",
@@ -175,7 +173,7 @@ export const defaultPortfolioData: PortfolioData = {
       outcome: "30% reduction in unplanned system downtime",
       featured: false,
       icon: "🔌",
-      link: "https://github.com/akishwar",
+      link: "https://github.com/ANBUDURGA",
     },
   ],
   certifications: [
@@ -192,7 +190,7 @@ export const defaultPortfolioData: PortfolioData = {
   ],
   contact: {
     email: "sastimukntharaj@gmail.com",
-    linkedin: "https://linkedin.com/in/akishwar",
-    github: "https://github.com/akishwar",
+    linkedin: "https://www.linkedin.com/in/anbudurga/",
+    github: "https://github.com/ANBUDURGA",
   },
 };

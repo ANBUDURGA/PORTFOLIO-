@@ -5,6 +5,7 @@ interface NavigationProps {
   onAdminClick: () => void;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
+  userName?: string;
 }
 
 const navLinks = [
@@ -15,7 +16,7 @@ const navLinks = [
   { label: 'Contact', href: '#contact' },
 ];
 
-export function Navigation({ onAdminClick, theme, toggleTheme }: NavigationProps) {
+export function Navigation({ onAdminClick, theme, toggleTheme, userName = "ANBU DURGA R" }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
@@ -72,10 +73,12 @@ export function Navigation({ onAdminClick, theme, toggleTheme }: NavigationProps
               }}
             >
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/30 flex items-center justify-center group-hover:border-gold/50 transition-colors">
-                <span className="font-serif text-gold font-bold text-lg">AS</span>
+                <span className="font-serif text-gold font-bold text-lg">
+                  {userName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                </span>
               </div>
               <span className="font-serif text-gold font-semibold text-lg hidden sm:block">
-                Akishwar
+                {userName}
               </span>
             </a>
 

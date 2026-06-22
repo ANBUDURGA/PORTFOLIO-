@@ -12,7 +12,7 @@ export function Footer() {
           {/* Copyright */}
           <div className="text-center sm:text-left">
             <p className="text-gold-muted text-sm">
-              © {new Date().getFullYear()} Akishwar. All rights reserved.
+              © {new Date().getFullYear()} ANBU DURGA R. All rights reserved.
             </p>
             <p className="text-gold-muted/60 text-xs mt-1 flex items-center justify-center sm:justify-start gap-1">
               Built with <Heart className="w-3 h-3 text-gold fill-gold" /> for Data Engineering

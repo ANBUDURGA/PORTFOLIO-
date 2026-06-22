@@ -1,14 +1,33 @@
 import { useEffect, useState } from 'react';
-import { Github, Linkedin, Mail, Download, ArrowRight } from 'lucide-react';
-import { useMouseParallax } from '@/hooks/useScrollAnimation';
+import { Github, Linkedin, Mail, Download, ArrowRight, Zap, GitBranch, Cloud, ShieldCheck } from 'lucide-react';
 
 interface HeroProps {
   name: string;
   tagline: string;
-  available: boolean;
-  photo?: string;
+  available?: boolean;
   resumeUrl?: string;
+  github?: string;
+  linkedin?: string;
+  email?: string;
+  stat1Number?: string;
+  stat1Label?: string;
+  stat2Number?: string;
+  stat2Label?: string;
+  stat3Number?: string;
+  stat3Label?: string;
+  stat4Number?: string;
+  stat4Label?: string;
 }
+
+const getResumeDownloadName = (url: string) => {
+  if (url.startsWith('data:application/pdf') || url.toLowerCase().includes('.pdf')) {
+    return 'ANBU_DURGA_R_Resume.pdf';
+  }
+  if (url.startsWith('data:application/vnd.openxml') || url.startsWith('data:application/msword') || url.toLowerCase().includes('.docx') || url.toLowerCase().includes('.doc')) {
+    return 'ANBU_DURGA_R_Resume.docx';
+  }
+  return 'ANBU_DURGA_R_Resume.pdf';
+};
 
 const roles = [
   'Data Engineer',
@@ -17,13 +36,27 @@ const roles = [
   'Problem Solver',
 ];
 
-export function Hero({ name, tagline, photo, resumeUrl }: HeroProps) {
+export function Hero({ 
+  name, 
+  tagline, 
+  resumeUrl,
+  github = "https://github.com/ANBUDURGA",
+  linkedin = "https://www.linkedin.com/in/anbudurga/",
+  email = "sastimukntharaj@gmail.com",
+  stat1Number = "10M+",
+  stat1Label = "Records Processed Daily",
+  stat2Number = "15+",
+  stat2Label = "Data Pipelines Built",
+  stat3Number = "5+",
+  stat3Label = "Cloud Platforms Used",
+  stat4Number = "100%",
+  stat4Label = "Data Reliability Focus"
+}: HeroProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(true);
   const [showCursor, setShowCursor] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
-  const parallax = useMouseParallax(5);
 
   // Typewriter effect
   useEffect(() => {
@@ -87,9 +120,9 @@ export function Hero({ name, tagline, photo, resumeUrl }: HeroProps) {
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-        <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-center">
-          {/* Left Content */}
-          <div className="order-2 lg:order-1">
+        <div className="flex flex-col items-center justify-center text-center">
+          {/* Main Content */}
+          <div className="flex flex-col items-center text-center max-w-3xl">
             {/* Availability Badge */}
             <div 
               className={`inline-flex items-center gap-2 px-4 py-2 bg-gold/10 border border-gold/20 rounded-full mb-6 transition-all duration-600 ${
@@ -144,7 +177,7 @@ export function Hero({ name, tagline, photo, resumeUrl }: HeroProps) {
 
             {/* Tagline */}
             <p 
-              className={`text-lg text-gold-muted leading-relaxed max-w-xl mb-8 transition-all duration-600 ${
+              className={`text-lg text-gold-muted leading-relaxed max-w-xl mx-auto mb-8 transition-all duration-600 ${
                 isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
               style={{ transitionDelay: '1000ms' }}
@@ -154,7 +187,7 @@ export function Hero({ name, tagline, photo, resumeUrl }: HeroProps) {
 
             {/* CTAs */}
             <div 
-              className={`flex flex-wrap gap-4 mb-8 transition-all duration-600 ${
+              className={`flex flex-wrap justify-center gap-4 mb-8 transition-all duration-600 ${
                 isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
               style={{ transitionDelay: '1200ms' }}
@@ -164,7 +197,13 @@ export function Hero({ name, tagline, photo, resumeUrl }: HeroProps) {
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
               {resumeUrl && (
-                <a href={resumeUrl} download="Resume" target="_blank" rel="noopener noreferrer" className="btn-secondary flex items-center gap-2 no-underline">
+                <a 
+                  href={resumeUrl} 
+                  download={getResumeDownloadName(resumeUrl)} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="btn-secondary flex items-center gap-2 no-underline"
+                >
                   <Download className="w-4 h-4" />
                   Download Resume
                 </a>
@@ -173,15 +212,15 @@ export function Hero({ name, tagline, photo, resumeUrl }: HeroProps) {
 
             {/* Social Links */}
             <div 
-              className={`flex items-center gap-4 transition-all duration-600 ${
+              className={`flex items-center justify-center gap-4 transition-all duration-600 ${
                 isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
               style={{ transitionDelay: '1400ms' }}
             >
               {[
-                { icon: Github, href: 'https://github.com/akishwar', label: 'GitHub' },
-                { icon: Linkedin, href: 'https://linkedin.com/in/akishwar', label: 'LinkedIn' },
-                { icon: Mail, href: 'mailto:sastimukntharaj@gmail.com', label: 'Email' },
+                { icon: Github, href: github, label: 'GitHub' },
+                { icon: Linkedin, href: linkedin, label: 'LinkedIn' },
+                { icon: Mail, href: `mailto:${email}`, label: 'Email' },
               ].map((social, i) => (
                 <a
                   key={social.label}
@@ -199,78 +238,56 @@ export function Hero({ name, tagline, photo, resumeUrl }: HeroProps) {
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Right Content - Profile Photo */}
-          <div 
-            className={`order-1 lg:order-2 flex justify-center transition-all duration-800 ${
-              isLoaded ? 'opacity-100 translate-y-0 rotate-0' : 'opacity-0 translate-y-8 -rotate-3'
-            }`}
-            style={{ 
-              transitionDelay: '400ms',
-              transform: `perspective(1000px) rotateX(${-parallax.y}deg) rotateY(${parallax.x}deg)`,
-            }}
-          >
-            <div className="relative">
-              {/* Rotating Gradient Ring */}
-              <div className="absolute inset-0 animate-rotate-slow">
-                <div 
-                  className="w-72 h-72 sm:w-96 sm:h-96 rounded-full"
-                  style={{
-                    background: 'conic-gradient(from 0deg, transparent, var(--hero-ring), transparent, var(--hero-ring), transparent)',
-                    filter: 'blur(2px)',
-                  }}
-                />
+        {/* Stats Bar Below the Main Grid */}
+        <div className={`mt-16 lg:mt-24 transition-all duration-800 ${
+          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+        style={{ transitionDelay: '1600ms' }}
+        >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 p-6 sm:p-8 bg-gold/5 border border-gold/15 rounded-2xl backdrop-blur-sm">
+            {/* Stat 1 */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-3 sm:gap-4 md:px-6 text-center sm:text-left">
+              <div className="p-2.5 bg-gold/10 border border-gold/20 rounded-xl text-gold">
+                <Zap className="w-5 h-5" />
               </div>
-
-              {/* Glow Behind */}
-              <div 
-                className="absolute inset-0 w-72 h-72 sm:w-96 sm:h-96 rounded-full blur-3xl opacity-30"
-                style={{
-                  background: 'radial-gradient(circle, var(--hero-blob) 0%, transparent 70%)',
-                }}
-              />
-
-              {/* Photo Container */}
-              <div className="relative w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-gradient-to-br from-forest-light to-forest border-2 border-gold/30 flex items-center justify-center overflow-hidden group cursor-default">
-                {photo ? (
-                  <img src={photo} alt={name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                ) : (
-                  <div className="text-center group-hover:scale-110 transition-transform duration-500">
-                    <span className="font-serif text-6xl sm:text-7xl font-bold text-gold/80">
-                      {name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                    <p className="text-gold-muted text-sm mt-2">Data Engineer</p>
-                  </div>
-                )}
+              <div>
+                <div className="text-xl sm:text-2xl font-bold font-mono text-gold leading-tight">{stat1Number}</div>
+                <div className="text-xs sm:text-sm text-gold-muted mt-0.5 sm:mt-1">{stat1Label}</div>
               </div>
-
-              {/* Floating Badges */}
-              <div 
-                className="absolute -top-2 -right-2 sm:top-0 sm:right-0 animate-float"
-                style={{ animationDelay: '0s' }}
-              >
-                <div className="px-3 py-1.5 bg-forest-light border border-gold/30 rounded-full shadow-lg">
-                  <span className="text-sm font-semibold text-gold">5 Projects</span>
-                </div>
+            </div>
+            
+            {/* Stat 2 */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-3 sm:gap-4 md:px-6 text-center sm:text-left border-l-0 md:border-l border-gold/15">
+              <div className="p-2.5 bg-gold/10 border border-gold/20 rounded-xl text-gold">
+                <GitBranch className="w-5 h-5" />
               </div>
-
-              <div 
-                className="absolute -bottom-2 -left-2 sm:bottom-4 sm:left-0 animate-float"
-                style={{ animationDelay: '1s' }}
-              >
-                <div className="px-3 py-1.5 bg-forest-light border border-gold/30 rounded-full shadow-lg">
-                  <span className="text-sm font-semibold text-gold">10+ Certs</span>
-                </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-bold font-mono text-gold leading-tight">{stat2Number}</div>
+                <div className="text-xs sm:text-sm text-gold-muted mt-0.5 sm:mt-1">{stat2Label}</div>
               </div>
-
-              <div 
-                className="absolute top-1/2 -right-8 sm:-right-12 animate-float"
-                style={{ animationDelay: '0.5s' }}
-              >
-                <div className="px-3 py-1.5 bg-gold/20 border border-gold/40 rounded-full shadow-lg flex items-center gap-1.5">
-                  <span className="text-sm">🔥</span>
-                  <span className="text-sm font-semibold text-gold">Open to Work</span>
-                </div>
+            </div>
+            
+            {/* Stat 3 */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-3 sm:gap-4 md:px-6 text-center sm:text-left border-l-0 md:border-l border-gold/15">
+              <div className="p-2.5 bg-gold/10 border border-gold/20 rounded-xl text-gold">
+                <Cloud className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-bold font-mono text-gold leading-tight">{stat3Number}</div>
+                <div className="text-xs sm:text-sm text-gold-muted mt-0.5 sm:mt-1">{stat3Label}</div>
+              </div>
+            </div>
+            
+            {/* Stat 4 */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-3 sm:gap-4 md:px-6 text-center sm:text-left border-l-0 md:border-l border-gold/15">
+              <div className="p-2.5 bg-gold/10 border border-gold/20 rounded-xl text-gold">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-bold font-mono text-gold leading-tight">{stat4Number}</div>
+                <div className="text-xs sm:text-sm text-gold-muted mt-0.5 sm:mt-1">{stat4Label}</div>
               </div>
             </div>
           </div>
