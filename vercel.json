@@ -1,0 +1,16 @@
+{
+  "buildCommand": "npm run build --prefix app",
+  "outputDirectory": "app/dist",
+  "installCommand": "npm install --prefix app",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/"
+    }
+  ]
+}
