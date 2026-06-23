@@ -137,8 +137,8 @@ export function Hero({
             </div>
 
             {/* Name with letter animation */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-gold mb-4">
-              {'Hi, I\'m '.split('').map((char, i) => (
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif font-semibold text-gold mb-4 tracking-wide whitespace-nowrap">
+              {"Hi, I'm ".split('').map((char, i) => (
                 <span
                   key={i}
                   className={`inline-block transition-all duration-500 ${

@@ -52,9 +52,10 @@ module.exports = {
         },
       },
       fontFamily: {
-        serif: ['Playfair Display', 'serif'],
-        sans: ['Inter', 'sans-serif'],
+        serif: ['Cormorant Garamond', 'serif'],
+        sans: ['Plus Jakarta Sans', 'sans-serif'],
         mono: ['Space Mono', 'monospace'],
+        display: ['Syne', 'sans-serif'],
       },
       borderRadius: {
         xl: "calc(var(--radius) + 4px)",
