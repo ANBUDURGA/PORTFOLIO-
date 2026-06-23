@@ -18,12 +18,36 @@
       "name": "Data Engineering",
       "icon": "🗄️",
       "skills": [
-        { "id": "s1", "name": "SQL", "category": "Data Engineering" },
-        { "id": "s2", "name": "ETL Pipelines", "category": "Data Engineering" },
-        { "id": "s3", "name": "Apache Spark", "category": "Data Engineering" },
-        { "id": "s4", "name": "Data Warehousing", "category": "Data Engineering" },
-        { "id": "s5", "name": "AWS (S3/EC2)", "category": "Data Engineering" },
-        { "id": "s6", "name": "Pipeline Design", "category": "Data Engineering" }
+        {
+          "id": "s1",
+          "name": "SQL",
+          "category": "Data Engineering"
+        },
+        {
+          "id": "s2",
+          "name": "ETL Pipelines",
+          "category": "Data Engineering"
+        },
+        {
+          "id": "s3",
+          "name": "Apache Spark",
+          "category": "Data Engineering"
+        },
+        {
+          "id": "s4",
+          "name": "Data Warehousing",
+          "category": "Data Engineering"
+        },
+        {
+          "id": "s5",
+          "name": "AWS (S3/EC2)",
+          "category": "Data Engineering"
+        },
+        {
+          "id": "s6",
+          "name": "Pipeline Design",
+          "category": "Data Engineering"
+        }
       ]
     },
     {
@@ -31,11 +55,31 @@
       "name": "Data Analysis",
       "icon": "📊",
       "skills": [
-        { "id": "s7", "name": "Python (Pandas, NumPy)", "category": "Data Analysis" },
-        { "id": "s8", "name": "Power BI", "category": "Data Analysis" },
-        { "id": "s9", "name": "Tableau", "category": "Data Analysis" },
-        { "id": "s10", "name": "Data Cleaning", "category": "Data Analysis" },
-        { "id": "s11", "name": "Visualization", "category": "Data Analysis" }
+        {
+          "id": "s7",
+          "name": "Python (Pandas, NumPy)",
+          "category": "Data Analysis"
+        },
+        {
+          "id": "s8",
+          "name": "Power BI",
+          "category": "Data Analysis"
+        },
+        {
+          "id": "s9",
+          "name": "Tableau",
+          "category": "Data Analysis"
+        },
+        {
+          "id": "s10",
+          "name": "Data Cleaning",
+          "category": "Data Analysis"
+        },
+        {
+          "id": "s11",
+          "name": "Visualization",
+          "category": "Data Analysis"
+        }
       ]
     },
     {
@@ -43,9 +87,26 @@
       "name": "Web Development",
       "icon": "🌐",
       "skills": [
-        { "id": "s12", "name": "HTML", "category": "Web Development" },
-        { "id": "s13", "name": "CSS", "category": "Web Development" },
-        { "id": "s14", "name": "JavaScript", "category": "Web Development" }
+        {
+          "id": "s12",
+          "name": "HTML",
+          "category": "Web Development"
+        },
+        {
+          "id": "s13",
+          "name": "CSS",
+          "category": "Web Development"
+        },
+        {
+          "id": "s14",
+          "name": "JavaScript",
+          "category": "Web Development"
+        },
+        {
+          "name": "node.js",
+          "category": "Web Development",
+          "id": "s1782192110469"
+        }
       ]
     },
     {
@@ -53,8 +114,16 @@
       "name": "Tools & Automation",
       "icon": "🤖",
       "skills": [
-        { "id": "s15", "name": "Python Scripting", "category": "Tools & Automation" },
-        { "id": "s16", "name": "Git & GitHub", "category": "Tools & Automation" }
+        {
+          "id": "s15",
+          "name": "Python Scripting",
+          "category": "Tools & Automation"
+        },
+        {
+          "id": "s16",
+          "name": "Git & GitHub",
+          "category": "Tools & Automation"
+        }
       ]
     }
   ],
@@ -64,7 +133,11 @@
       "title": "Real-Time Ride Analytics Lakehouse",
       "description": "Built a scalable data lakehouse architecture for processing and analyzing ride-sharing data in real-time, enabling sub-second analytics on millions of events.",
       "type": "Data Engineering",
-      "tools": ["Kafka", "Spark", "AWS S3"],
+      "tools": [
+        "Kafka",
+        "Spark",
+        "AWS S3"
+      ],
       "outcome": "Sub-second data latency for 1M+ ride events",
       "featured": true,
       "icon": "🚗",
@@ -75,7 +148,11 @@
       "title": "Sales Insights Dashboard",
       "description": "Created an interactive Power BI dashboard that surfaced hidden sales patterns and trends, enabling data-driven decision making for the sales team.",
       "type": "Data Analyst",
-      "tools": ["Power BI", "SQL", "Python"],
+      "tools": [
+        "Power BI",
+        "SQL",
+        "Python"
+      ],
       "outcome": "Surfaced hidden sales patterns → improved decisions",
       "featured": false,
       "icon": "🛒",
@@ -86,7 +163,11 @@
       "title": "Interactive Data Viz Web App",
       "description": "Developed a browser-based data visualization application for real-time data storytelling and interactive exploration of complex datasets.",
       "type": "Web Dev",
-      "tools": ["HTML", "CSS", "JavaScript"],
+      "tools": [
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ],
       "outcome": "Real-time browser-based data storytelling",
       "featured": false,
       "icon": "📊",
@@ -97,7 +178,11 @@
       "title": "Demand Forecasting Pipeline",
       "description": "Implemented an end-to-end ETL pipeline for predicting product demand curves, helping reduce stockouts and optimize inventory management.",
       "type": "Data Engineering",
-      "tools": ["Python", "SQL", "ETL"],
+      "tools": [
+        "Python",
+        "SQL",
+        "ETL"
+      ],
       "outcome": "Reduced stockouts by predicting demand curves",
       "featured": false,
       "icon": "📦",
@@ -108,7 +193,10 @@
       "title": "IoT Stream Anomaly Detection System",
       "description": "Built a real-time anomaly detection system using Spark Streaming to identify unusual patterns in IoT sensor data and trigger alerts.",
       "type": "Data Engineering",
-      "tools": ["Spark Streaming", "Python"],
+      "tools": [
+        "Spark Streaming",
+        "Python"
+      ],
       "outcome": "30% reduction in unplanned system downtime",
       "featured": false,
       "icon": "🔌",
@@ -116,16 +204,69 @@
     }
   ],
   "certifications": [
-    { "id": "c1", "name": "Data Analytics Internship", "issuer": "Acmegrade", "date": "Mar 2024", "endDate": "May 2024" },
-    { "id": "c2", "name": "Advanced SQL", "issuer": "Great Learning", "date": "Aug 2024" },
-    { "id": "c3", "name": "Data Analytics Internship", "issuer": "SkillCraft Technology", "date": "Mar 2025", "endDate": "Apr 2025" },
-    { "id": "c4", "name": "Cloud Data Engineer Internship", "issuer": "Cognifyz", "date": "Feb 2025", "endDate": "Mar 2025" },
-    { "id": "c5", "name": "Python Fundamentals", "issuer": "CodeIntern", "date": "Jul 2025" },
-    { "id": "c6", "name": "IBM Data Science Certification", "issuer": "IBM", "date": "Jan 2026" },
-    { "id": "c7", "name": "Microsoft Power BI Data Analyst", "issuer": "Microsoft", "date": "Feb 2026" },
-    { "id": "c8", "name": "Data Engineer Professional Certificate", "issuer": "IBM", "date": "Feb 2026" },
-    { "id": "c9", "name": "Big Data Analytics", "issuer": "Great Learning", "date": "Feb 2026" },
-    { "id": "c10", "name": "Python Programming", "issuer": "Reliance Foundation", "date": "Apr 2026" }
+    {
+      "id": "c1",
+      "name": "Data Analytics Internship",
+      "issuer": "Acmegrade",
+      "date": "Mar 2024",
+      "endDate": "May 2024"
+    },
+    {
+      "id": "c2",
+      "name": "Advanced SQL",
+      "issuer": "Great Learning",
+      "date": "Aug 2024"
+    },
+    {
+      "id": "c3",
+      "name": "Data Analytics Internship",
+      "issuer": "SkillCraft Technology",
+      "date": "Mar 2025",
+      "endDate": "Apr 2025"
+    },
+    {
+      "id": "c4",
+      "name": "Cloud Data Engineer Internship",
+      "issuer": "Cognifyz",
+      "date": "Feb 2025",
+      "endDate": "Mar 2025"
+    },
+    {
+      "id": "c5",
+      "name": "Python Fundamentals",
+      "issuer": "CodeIntern",
+      "date": "Jul 2025"
+    },
+    {
+      "id": "c6",
+      "name": "IBM Data Science Certification",
+      "issuer": "IBM",
+      "date": "Jan 2026"
+    },
+    {
+      "id": "c7",
+      "name": "Microsoft Power BI Data Analyst",
+      "issuer": "Microsoft",
+      "date": "Feb 2026"
+    },
+    {
+      "id": "c8",
+      "name": "Data Engineer Professional Certificate",
+      "issuer": "IBM",
+      "date": "Feb 2026"
+    },
+    {
+      "id": "c9",
+      "name": "Big Data Analytics",
+      "issuer": "Great Learning",
+      "date": "Feb 2026"
+    },
+    {
+      "id": "c10",
+      "name": "Python Programming",
+      "issuer": "Reliance Foundation",
+      "date": "Apr 2026"
+    }
   ],
   "contact": {
     "email": "sastimukntharaj@gmail.com",
